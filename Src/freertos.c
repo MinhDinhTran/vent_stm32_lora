@@ -78,7 +78,9 @@
 
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN Variables */
-
+#if defined DEBUG || defined RELEASE
+static xQueueHandle SpeedQueue_handle = NULL;
+#endif
 /* USER CODE END Variables */
 osThreadId LoRaHandle;
 osThreadId FanHandle;
@@ -122,10 +124,11 @@ void MX_FREERTOS_Init(void) {
   osThreadDef(LoRa, StartLoRa, osPriorityAboveNormal, 0, 180);
   LoRaHandle = osThreadCreate(osThread(LoRa), NULL);
 
+ #if defined DEBUG || defined RELEASE
   /* definition and creation of Fan */
   osThreadDef(Fan, StartTaskFan, osPriorityNormal, 0, 128);
   FanHandle = osThreadCreate(osThread(Fan), NULL);
-
+#endif
   /* definition and creation of mcuWork */
   osThreadDef(mcuWork, StartMcuWork, osPriorityNormal, 0, 128);
   mcuWorkHandle = osThreadCreate(osThread(mcuWork), NULL);
@@ -135,7 +138,9 @@ void MX_FREERTOS_Init(void) {
   /* USER CODE END RTOS_THREADS */
 
   /* USER CODE BEGIN RTOS_QUEUES */
-  /* add queues, ... */
+#if defined DEBUG || defined RELEASE
+  SpeedQueue_handle = xQueueCreate(3, sizeof(uint8_t));
+#endif
   /* USER CODE END RTOS_QUEUES */
 }
 
@@ -153,7 +158,14 @@ void StartLoRa(void const * argument)
   SX1278_hw_t SX1278_hw;
   SX1278_t SX1278;
   int ret;
-  char buffer[64];
+  char buffer[24];
+#if defined DEBUG || defined RELEASE
+  uint8_t speed;
+#endif
+//  char speed0[]="Speed:0";
+//  char speed1[]="Speed:1";
+//  char speed2[]="Speed:2";
+  
   
   
 #if defined LORA_MASTER_DEBUG || defined LORA_MASTER_RELEASE
@@ -195,16 +207,41 @@ void StartLoRa(void const * argument)
     osDelay(1000);
     ret = SX1278_LoRaRxPacket(&SX1278);
     //printf("R: %d\r\n", ret);
-    if (ret > 0) {
+    if (ret == 7) {
       SX1278_read(&SX1278, (uint8_t *) buffer, ret);
+      
+      switch((uint8_t)buffer[6]){
+      case 48:
+        speed = 0;
 #ifdef DEBUG
-      printf(" (%d): %s\r\n", ret, buffer);
+        printf("Speed:0\r\n");
+#endif
+        xQueueSendToBack(SpeedQueue_handle, &speed, 100/portTICK_RATE_MS);
+        break;
+      case 49:
+        speed = 1;
+#ifdef DEBUG
+        printf("Speed:1\r\n");
+#endif
+        xQueueSendToBack(SpeedQueue_handle, &speed, 100/portTICK_RATE_MS);
+        break;
+      case 50: 
+        speed = 2;
+#ifdef DEBUG
+        printf("Speed:2\r\n");
+#endif
+        xQueueSendToBack(SpeedQueue_handle, &speed, 100/portTICK_RATE_MS);
+        break;
+      }
+      
+#ifdef DEBUG
+        printf("RECV (%d): %s\r\n", ret, buffer);
 #endif
     }
 #endif
     
 #if defined LORA_MASTER_DEBUG || defined LORA_MASTER_RELEASE
-    message_length = sprintf(buffer, "Speed %d", message);
+    message_length = sprintf(buffer, "Speed:%d", message);
     ret = SX1278_LoRaEntryTx(&SX1278, message_length, 2000);
     
   #ifdef LORA_MASTER_DEBUG 
@@ -234,6 +271,8 @@ void StartLoRa(void const * argument)
 #endif
 }
 }
+
+#if defined DEBUG || defined RELEASE
 /* USER CODE BEGIN Header_StartTaskFan */
 /**
 * @brief Function implementing the Fan thread.
@@ -244,13 +283,33 @@ void StartLoRa(void const * argument)
 void StartTaskFan(void const * argument)
 {
   /* USER CODE BEGIN StartTaskFan */
+  uint8_t speed = 0; // 1, 2
   /* Infinite loop */
   for(;;)
   {
-    osDelay(1000);
+    xQueueReceive(SpeedQueue_handle, &speed, 0);
+    switch(speed){
+    case 0: 
+      HAL_GPIO_WritePin(Fan_GPIO_Port, Fan_Pin, GPIO_PIN_RESET); //Stop
+      break;
+    case 1: 
+      HAL_GPIO_WritePin(Fan_GPIO_Port, Fan_Pin, GPIO_PIN_SET); // Speed 1
+      osDelay(50);
+      HAL_GPIO_WritePin(Fan_GPIO_Port, Fan_Pin, GPIO_PIN_RESET);
+      osDelay(100);
+      break;
+    case 2: 
+      HAL_GPIO_WritePin(Fan_GPIO_Port, Fan_Pin, GPIO_PIN_SET); // Speed 2
+      osDelay(50);
+      HAL_GPIO_WritePin(Fan_GPIO_Port, Fan_Pin, GPIO_PIN_RESET);
+      osDelay(0);
+      break;
   }
   /* USER CODE END StartTaskFan */
 }
+}
+#endif
+
 
 /* USER CODE BEGIN Header_StartMcuWork */
 /**
