@@ -1,9 +1,8 @@
-<?xml version="1.0" encoding="iso-8859-1"?>
-
+<?xml version="1.0" encoding="UTF-8"?>
 <project>
   <fileVersion>2</fileVersion>
   <configuration>
-    <name>Debug</name>
+    <name>ventilation</name>
     <toolchain>
       <name>ARM</name>
     </toolchain>
@@ -188,6 +187,7 @@
           <state>USE_HAL_DRIVER</state>
           <state>STM32F103xB</state>
           <state>DEBUG</state>
+          <state>USE_FULL_LL_DRIVER</state>
         </option>
         <option>
           <name>CCPreprocFile</name>
@@ -639,7 +639,7 @@
     <settings>
       <name>BICOMP</name>
       <archiveVersion>0</archiveVersion>
-      <data/>
+      <data></data>
     </settings>
     <settings>
       <name>BUILDACTION</name>
@@ -967,7 +967,7 @@
     <settings>
       <name>BILINK</name>
       <archiveVersion>0</archiveVersion>
-      <data/>
+      <data></data>
     </settings>
   </configuration>
   <configuration>
@@ -1607,7 +1607,7 @@
     <settings>
       <name>BICOMP</name>
       <archiveVersion>0</archiveVersion>
-      <data/>
+      <data></data>
     </settings>
     <settings>
       <name>BUILDACTION</name>
@@ -1935,7 +1935,7 @@
     <settings>
       <name>BILINK</name>
       <archiveVersion>0</archiveVersion>
-      <data/>
+      <data></data>
     </settings>
   </configuration>
   <configuration>
@@ -2575,7 +2575,7 @@
     <settings>
       <name>BICOMP</name>
       <archiveVersion>0</archiveVersion>
-      <data/>
+      <data></data>
     </settings>
     <settings>
       <name>BUILDACTION</name>
@@ -2903,7 +2903,7 @@
     <settings>
       <name>BILINK</name>
       <archiveVersion>0</archiveVersion>
-      <data/>
+      <data></data>
     </settings>
   </configuration>
   <configuration>
@@ -3543,7 +3543,7 @@
     <settings>
       <name>BICOMP</name>
       <archiveVersion>0</archiveVersion>
-      <data/>
+      <data></data>
     </settings>
     <settings>
       <name>BUILDACTION</name>
@@ -3871,7 +3871,7 @@
     <settings>
       <name>BILINK</name>
       <archiveVersion>0</archiveVersion>
-      <data/>
+      <data></data>
     </settings>
   </configuration>
   <group>
@@ -3908,6 +3908,30 @@
       <file>
         <name>$PROJ_DIR$\..\Src\SX1278.c</name>
       </file>
+      <file>
+        <name>$PROJ_DIR$/../Src/main.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$/../Src/gpio.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$/../Src/freertos.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$/../Src/spi.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$/../Src/tim.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$/../Src/stm32f1xx_it.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$/../Src/stm32f1xx_hal_msp.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$/../Src/stm32f1xx_hal_timebase_tim.c</name>
+      </file>
     </group>
   </group>
   <group>
@@ -3916,6 +3940,9 @@
       <name>CMSIS</name>
       <file>
         <name>$PROJ_DIR$\..\Src\system_stm32f1xx.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$/../Src/system_stm32f1xx.c</name>
       </file>
     </group>
     <group>
@@ -3962,6 +3989,66 @@
       <file>
         <name>$PROJ_DIR$\..\Drivers\STM32F1xx_HAL_Driver\Src\stm32f1xx_hal_tim_ex.c</name>
       </file>
+      <file>
+        <name>$PROJ_DIR$/../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_gpio_ex.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$/../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_spi.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$/../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_spi_ex.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$/../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_tim.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$/../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_tim_ex.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$/../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_ll_tim.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$/../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_ll_gpio.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$/../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_ll_dma.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$/../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$/../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_rcc.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$/../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_rcc_ex.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$/../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_gpio.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$/../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_dma.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$/../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_cortex.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$/../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_pwr.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$/../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$/../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$/../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_ll_rcc.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$/../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_ll_utils.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$/../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_ll_exti.c</name>
+      </file>
     </group>
   </group>
   <group>
@@ -3998,8 +4085,37 @@
       <file>
         <name>$PROJ_DIR$\..\Middlewares\Third_Party\FreeRTOS\Source\timers.c</name>
       </file>
+      <file>
+        <name>$PROJ_DIR$/../Middlewares/Third_Party/FreeRTOS/Source/croutine.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$/../Middlewares/Third_Party/FreeRTOS/Source/event_groups.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$/../Middlewares/Third_Party/FreeRTOS/Source/list.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$/../Middlewares/Third_Party/FreeRTOS/Source/queue.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$/../Middlewares/Third_Party/FreeRTOS/Source/tasks.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$/../Middlewares/Third_Party/FreeRTOS/Source/timers.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$/../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$/../Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$/../Middlewares/Third_Party/FreeRTOS/Source/portable/IAR/ARM_CM3/port.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$/../Middlewares/Third_Party/FreeRTOS/Source/portable/IAR/ARM_CM3/portasm.s</name>
+      </file>
     </group>
   </group>
 </project>
-
 
