@@ -152,14 +152,122 @@ void MX_FREERTOS_Init(void) {
 /* USER CODE END Header_StartLoRa */
 void StartLoRa(void const * argument)
 {
+/* USER CODE BEGIN StartLoRa */
+  SX1278_hw_t SX1278_hw;
+  SX1278_t SX1278;
+  int ret;
+  char buffer[24];
+#if defined DEBUG || defined RELEASE
+  uint8_t speed;
+#endif
+//  char speed0[]="Speed:0";
+//  char speed1[]="Speed:1";
+//  char speed2[]="Speed:2";
+  
+  
+  
+#if defined LORA_MASTER_DEBUG || defined LORA_MASTER_RELEASE
+  int message = 0;
+  int message_length;
+#endif 
+  
+  
+  //initialize LoRa module
+  SX1278_hw.dio0.port = IRQ_DIO0_GPIO_Port;
+  SX1278_hw.dio0.pin = IRQ_DIO0_Pin;
+  SX1278_hw.nss.port = NSS_GPIO_Port;
+  SX1278_hw.nss.pin = NSS_Pin;
+  SX1278_hw.reset.port = Reset_GPIO_Port;
+  SX1278_hw.reset.pin = Reset_Pin;
+  SX1278_hw.spi = &hspi1;
+  SX1278.hw = &SX1278_hw;
+  
+#if defined DEBUG || defined LORA_MASTER_DEBUG
+  printf("Configuring LoRa module\r\n");
+#endif
+  SX1278_begin(&SX1278, SX1278_433MHZ, SX1278_POWER_17DBM, SX1278_LORA_SF_8, 
+               SX1278_LORA_BW_20_8KHZ, 10);
+#if defined DEBUG || defined LORA_MASTER_DEBUG
+  printf("Done configuring LoRa module\r\n");
+#endif
 
-  /* USER CODE BEGIN StartLoRa */
+
+#if defined DEBUG || defined RELEASE
+  ret = SX1278_LoRaEntryRx(&SX1278, 16, 2000);
+#elif defined LORA_MASTER_DEBUG || defined LORA_MASTER_RELEASE
+  ret = SX1278_LoRaEntryTx(&SX1278, 16, 2000);
+#endif
+  
   /* Infinite loop */
   for(;;)
   {
-    osDelay(1);
-  }
-  /* USER CODE END StartLoRa */
+#if defined DEBUG || defined RELEASE
+    osDelay(1000);
+    ret = SX1278_LoRaRxPacket(&SX1278);
+    //printf("R: %d\r\n", ret);
+    if (ret == 7) {
+      SX1278_read(&SX1278, (uint8_t *) buffer, ret);
+      
+      switch((uint8_t)buffer[6]){
+      case 48:
+        speed = 0;
+#ifdef DEBUG
+        printf("Speed:0\r\n");
+#endif
+        xQueueSendToBack(SpeedQueue_handle, &speed, 100/portTICK_RATE_MS);
+        break;
+      case 49:
+        speed = 1;
+#ifdef DEBUG
+        printf("Speed:1\r\n");
+#endif
+        xQueueSendToBack(SpeedQueue_handle, &speed, 100/portTICK_RATE_MS);
+        break;
+      case 50: 
+        speed = 2;
+#ifdef DEBUG
+        printf("Speed:2\r\n");
+#endif
+        xQueueSendToBack(SpeedQueue_handle, &speed, 100/portTICK_RATE_MS);
+        break;
+      }
+      
+#ifdef DEBUG
+        printf("RECV (%d): %s\r\n", ret, buffer);
+#endif
+    }
+#endif
+    
+#if defined LORA_MASTER_DEBUG || defined LORA_MASTER_RELEASE
+    message_length = sprintf(buffer, "Speed:%d", message);
+    ret = SX1278_LoRaEntryTx(&SX1278, message_length, 2000);
+    
+  #ifdef LORA_MASTER_DEBUG 
+      printf("SX1278_LoRaEntryTx ret = (%d)\r\n", ret);
+  #endif
+    
+    ret = SX1278_LoRaTxPacket(&SX1278, (uint8_t *) buffer, message_length,
+                                             2000);
+
+  #ifdef LORA_MASTER_DEBUG 
+      printf("SX1278_LoRaTxPacket ret = (%d)\r\n", ret);
+  #endif    
+
+    osDelay(5000);
+    
+    switch(message){
+    case 0: 
+      message += 1;
+      break;
+    case 1: 
+      message += 1;
+      break;
+    case 2: 
+      message = 0;
+      break;
+    }
+#endif
+}
 }
 
 /* USER CODE BEGIN Header_StartTaskFan */
