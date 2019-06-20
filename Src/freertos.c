@@ -280,7 +280,7 @@ void StartLoRa(void const * argument)
 void StartTaskFan(void const * argument)
 {
   /* USER CODE BEGIN StartTaskFan */
-  //uint8_t speed = 0; // 1, 2
+	uint8_t speed = 0; // 1, 2
 	/* Measured pulse delay (in us) */
 	__IO uint32_t uwMeasuredDelay;
 
@@ -289,27 +289,31 @@ void StartTaskFan(void const * argument)
   /* Infinite loop */
   for(;;)
   {
-	  /*
+	  
     xQueueReceive(SpeedQueue_handle, &speed, 0);
     switch(speed){
-    case 0: 
-      HAL_GPIO_WritePin(Fan_GPIO_Port, Fan_Pin, GPIO_PIN_RESET); //Stop
+    case 0:
+	  //uwMeasuredDelay = 8000;
+      //LL_TIM_OC_SetCompareCH1(TIM2, __LL_TIM_CALC_DELAY(SystemCoreClock, LL_TIM_GetPrescaler(TIM2), uwMeasuredDelay)); 
+      //LL_TIM_SetAutoReload(TIM2, __LL_TIM_CALC_PULSE(SystemCoreClock, LL_TIM_GetPrescaler(TIM2), uwMeasuredDelay, 50)); // REG 2800 MAX speed - 5800 min speed 
+	  //LL_TIM_DisableCounter(TIM2); // Stop FAN
+      HAL_NVIC_DisableIRQ(EXTI15_10_IRQn);
       break;
     case 1: 
-      HAL_GPIO_WritePin(Fan_GPIO_Port, Fan_Pin, GPIO_PIN_SET); // Speed 1
-      osDelay(50);
-      HAL_GPIO_WritePin(Fan_GPIO_Port, Fan_Pin, GPIO_PIN_RESET);
-      osDelay(100);
+      HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
+      uwMeasuredDelay = 2800;
+      LL_TIM_OC_SetCompareCH1(TIM2, __LL_TIM_CALC_DELAY(SystemCoreClock, LL_TIM_GetPrescaler(TIM2), uwMeasuredDelay)); 
+      LL_TIM_SetAutoReload(TIM2, __LL_TIM_CALC_PULSE(SystemCoreClock, LL_TIM_GetPrescaler(TIM2), uwMeasuredDelay, 50)); // REG 2800 MAX speed - 5800 min speed
       break;
     case 2: 
-      HAL_GPIO_WritePin(Fan_GPIO_Port, Fan_Pin, GPIO_PIN_SET); // Speed 2
-      osDelay(50);
-      HAL_GPIO_WritePin(Fan_GPIO_Port, Fan_Pin, GPIO_PIN_RESET);
-      osDelay(0);
+      HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
+      uwMeasuredDelay = 4800;
+      LL_TIM_OC_SetCompareCH1(TIM2, __LL_TIM_CALC_DELAY(SystemCoreClock, LL_TIM_GetPrescaler(TIM2), uwMeasuredDelay)); 
+      LL_TIM_SetAutoReload(TIM2, __LL_TIM_CALC_PULSE(SystemCoreClock, LL_TIM_GetPrescaler(TIM2), uwMeasuredDelay, 50)); // REG 2800 MAX speed - 5800 min speed
       break;
-	  */
 	  
 	  
+	/* 
     for(uwMeasuredDelay = 2800; uwMeasuredDelay < 5800; uwMeasuredDelay++)
         {
             
@@ -319,8 +323,10 @@ void StartTaskFan(void const * argument)
             LL_TIM_SetAutoReload(TIM2, __LL_TIM_CALC_PULSE(SystemCoreClock, LL_TIM_GetPrescaler(TIM2), uwMeasuredDelay, 50)); // REG 2800 MAX speed - 5800 min speed
             HAL_Delay(5);
         }
+		*/
   }
   /* USER CODE END StartTaskFan */
+}
 }
 
 /* USER CODE BEGIN Header_StartMcuWork */
